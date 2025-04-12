@@ -10,7 +10,7 @@ load_dotenv()
 
 # video https://preview.screen.studio/share/vuq91Ej8
 llm = ChatGoogleGenerativeAI(
-	model='gemini-1.5-flash-latest',
+	model='gemini-2.0-flash-exp',
 	temperature=0.0,
 )
 task = 'go to https://en.wikipedia.org/wiki/Banana and click on buttons on the wikipedia page to go as fast as possible from banana to Quantum mechanics'
