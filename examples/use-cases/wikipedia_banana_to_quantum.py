@@ -1,7 +1,7 @@
 import asyncio
 
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from browser_use import Agent
 from browser_use.browser.browser import Browser, BrowserConfig, BrowserContextConfig
@@ -9,8 +9,8 @@ from browser_use.browser.browser import Browser, BrowserConfig, BrowserContextCo
 load_dotenv()
 
 # video https://preview.screen.studio/share/vuq91Ej8
-llm = ChatOpenAI(
-	model='gpt-4o',
+llm = ChatGoogleGenerativeAI(
+	model='gemini-1.5-flash-latest',
 	temperature=0.0,
 )
 task = 'go to https://en.wikipedia.org/wiki/Banana and click on buttons on the wikipedia page to go as fast as possible from banana to Quantum mechanics'
