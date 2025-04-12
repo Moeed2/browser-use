@@ -27,8 +27,8 @@ if not os.getenv('GOOGLE_API_KEY'):
 
 
 async def main():
-	# Use Gemini 2.5 Pro
-	llm = ChatGoogleGenerativeAI(model='gemini-2.5-pro')
+	# Use Gemini Flash 2.0
+	llm = ChatGoogleGenerativeAI(model='gemini-flash-2.0')
 	agent = Agent(
 		task='go to https://captcha.com/demos/features/captcha-demo.aspx and solve the captcha',
 		llm=llm,
