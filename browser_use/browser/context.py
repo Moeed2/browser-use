@@ -1308,6 +1308,65 @@ class BrowserContext:
 			logger.error(f"❌  Failed to locate element by text '{text}': {str(e)}")
 			return None
 
+	@time_execution_async('--get_element_by_label_text')
+	async def get_element_by_label_text(self, label_text: str, element_type: str = 'input, textarea, select') -> Optional[ElementHandle]:
+		"""
+		Finds a form element (input, textarea, select) associated with a <label> containing the given text.
+
+		Args:
+		    label_text: The exact text content of the label to search for.
+		    element_type: Comma-separated list of target element types to consider.
+
+		Returns:
+		    An ElementHandle for the associated form element, or None if not found.
+		"""
+		page = await self.get_current_page()
+		try:
+			# Attempt 1: Find label by text and get its 'for' attribute
+			label_handle = await page.query_selector(f'label:has-text("{label_text}")')
+			if label_handle:
+				for_id = await label_handle.get_attribute('for')
+				if for_id:
+					# Find the element with that ID, matching the allowed types
+					element_handle = await page.query_selector(f'{element_type}#{for_id}')
+					if element_handle:
+						await element_handle.scroll_into_view_if_needed()
+						return element_handle
+
+			# Attempt 2: Find label by text and look for the target element type *inside* it
+			# This handles cases like <label>Question<input type="radio"></label>
+			label_handle = await page.query_selector(f'label:has-text("{label_text}")')
+			if label_handle:
+				element_handle = await label_handle.query_selector(element_type)
+				if element_handle:
+					await element_handle.scroll_into_view_if_needed()
+					return element_handle
+
+			# Attempt 3: Find the target element directly using aria-label or aria-labelledby
+			# Check aria-label first
+			element_handle = await page.query_selector(f'{element_type}[aria-label="{label_text}"]')
+			if element_handle:
+				await element_handle.scroll_into_view_if_needed()
+				return element_handle
+
+			# Check aria-labelledby (more complex, requires finding the labeling element)
+			# Find potential labeling elements by text
+			labeling_elements = await page.query_selector_all(f'*:text("{label_text}")')
+			for labeling_element in labeling_elements:
+				label_id = await labeling_element.get_attribute('id')
+				if label_id:
+					element_handle = await page.query_selector(f'{element_type}[aria-labelledby="{label_id}"]')
+					if element_handle:
+						await element_handle.scroll_into_view_if_needed()
+						return element_handle
+
+			logger.debug(f"Could not find form element associated with label: '{label_text}'")
+			return None
+
+		except Exception as e:
+			logger.error(f"❌ Error finding element by label '{label_text}': {str(e)}")
+			return None
+
 	@time_execution_async('--input_text_element_node')
 	async def _input_text_element_node(self, element_node: DOMElementNode, text: str):
 		"""

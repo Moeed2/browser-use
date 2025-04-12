@@ -109,6 +109,7 @@ Current url: {self.state.url}
 Available tabs:
 {self.state.tabs}
 Interactive elements from top layer of the current page inside the viewport:
+(Pay close attention to labels near input fields, radio buttons, checkboxes, and dropdowns to understand survey questions.)
 {elements_text}
 {step_info_description}
 """
