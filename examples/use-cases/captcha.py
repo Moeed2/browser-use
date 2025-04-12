@@ -16,18 +16,19 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import asyncio
 
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from browser_use import Agent
 
 # Load environment variables
 load_dotenv()
-if not os.getenv('OPENAI_API_KEY'):
-	raise ValueError('OPENAI_API_KEY is not set. Please add it to your environment variables.')
+if not os.getenv('GOOGLE_API_KEY'):
+	raise ValueError('GOOGLE_API_KEY is not set. Please add it to your environment variables.')
 
 
 async def main():
-	llm = ChatOpenAI(model='gpt-4o')
+	# Use Gemini 2.5 Pro
+	llm = ChatGoogleGenerativeAI(model='gemini-2.5-pro')
 	agent = Agent(
 		task='go to https://captcha.com/demos/features/captcha-demo.aspx and solve the captcha',
 		llm=llm,
