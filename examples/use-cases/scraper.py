@@ -1,5 +1,7 @@
+import logging # Add logging
 from langchain_google_genai import ChatGoogleGenerativeAI
-from browser_use import Agent, Browser, BrowserConfig, Controller
+# Import BrowserContext
+from browser_use import Agent, Browser, BrowserConfig, Controller, BrowserContext
 from pydantic import SecretStr
 import os
 from dotenv import load_dotenv
@@ -7,11 +9,34 @@ load_dotenv()
 import asyncio
 ChatGoogleGenerativeAI.model_rebuild()
 
+# Setup logger
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO) # Configure basic logging for visibility
+
 controller = Controller()
 
-@controller.action("Checks if the current page is a survey.")
-def check_if_survey(browser: Browser):
-    page = browser.get_current_page()
+@controller.action("Checks if the current page URL contains the word 'survey'.")
+# Make the function async and request BrowserContext
+async def check_if_survey(browser_context: BrowserContext):
+    """Checks the current page URL for the word 'survey' and returns a descriptive string."""
+    try:
+        # Await the async call to get the current page
+        page = await browser_context.get_current_page()
+        url = page.url
+        logger.info(f"Current page URL: {url}")
+        # Check if 'survey' is in the lowercase URL
+        if "survey" in url.lower():
+            result = "The current page appears to be a survey page (URL contains 'survey')."
+            logger.info(result)
+            return result
+        else:
+            result = "The current page does not appear to be a survey page (URL does not contain 'survey')."
+            logger.info(result)
+            return result
+    except Exception as e:
+        # Log errors and return an informative message
+        logger.error(f"Error checking if page is a survey: {e}", exc_info=True)
+        return f"Error occurred while checking the page URL: {e}"
 
 
 async def main():
