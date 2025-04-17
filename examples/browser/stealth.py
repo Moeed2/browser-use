@@ -2,13 +2,15 @@ import asyncio
 import os
 import sys
 
-from langchain_openai import ChatOpenAI
+
+
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from browser_use import Agent, Browser, BrowserConfig, BrowserContextConfig
 
-llm = ChatOpenAI(model='gpt-4o')
+llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash-exp', api_key=(os.getenv('GEMINI_API_KEY')))
 browser = Browser(
 	config=BrowserConfig(
 		headless=False,
@@ -76,4 +78,4 @@ async def main():
 
 
 if __name__ == '__main__':
-	asyncio.run(main())
+	asyncio.run(main()) 

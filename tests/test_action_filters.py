@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from browser_use.controller.registry.service import Registry
 from browser_use.controller.registry.views import ActionRegistry, RegisteredAction
 
-
+was 
 class EmptyParamModel(BaseModel):
 	pass
 

@@ -10,7 +10,6 @@ To test this locally, follow these steps:
 
 @dev You need to set the `GEMINI_API_KEY` environment variable before proceeding.
 """
-
 import os
 import sys
 
