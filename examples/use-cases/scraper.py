@@ -24,13 +24,13 @@ SURVEY_TASK = (
     "Fill out the current survey naturally based on this background, making up reasonable details as needed."
 )
 NO_SURVEY_TASK = (
-    "Navigate to the correct survey page and start the survey."
+    ""
 )
 
 async def main():
     browser = Browser(
         config=BrowserConfig(
-            chrome_instance_path='C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',  # type: ignore
+            chrome_instance_path='C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',  
         )
     )
     llm = ChatGoogleGenerativeAI(
