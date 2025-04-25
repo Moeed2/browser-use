@@ -28,19 +28,19 @@ SURVEY_TASK = (
 	'Fill out the current survey naturally based on this background, making up reasonable details as needed.'
 )
 NO_SURVEY_TASK = (
-	f'Select a survey that starts with #. {SURVEY_TASK}'
+	f'Go to Prizerebel.com. Select a survey that starts with #. {SURVEY_TASK}'
 )
 
 
-async def check_if_survey_in_url(browser: BrowserContext):
-	try:
-		page = await browser.get_current_page()
-		url = page.url
-		logger.info(f'Current page URL: {url}')
-		return SURVEY_TASK if 'survey' in url.lower() or "screening" in url.lower else NO_SURVEY_TASK
-	except Exception as e:
-		logger.error(f'Error checking page URL: {e}', exc_info=True)
-		return 'error'
+# sync def check_if_survey_in_url(browser: BrowserContext):
+# 	try:
+# 		page = await browser.get_current_page()
+# 		url = page.url
+# 		logger.info(f'Current page URL: {url}')
+# 		return SURVEY_TASK if 'survey' in url.lower() or "screening" in url.lower else NO_SURVEY_TASK
+# 	except Exception as e:
+# 		logger.error(f'Error checking page URL: {e}', exc_info=True)
+# 		return 'error'
 
 
 async def main():
@@ -49,10 +49,20 @@ async def main():
 			chrome_instance_path='C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',  # type: ignore
 		)
 	)
+	task = ''
+	context = await browser.new_context()
+	page = await context.get_current_page()
+	url = page.url
+	if 'survey' in url.lower() or "screening" in url.lower:
+		task = SURVEY_TASK
+	else:
+		task = NO_SURVEY_TASK
+
 	llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash-exp', api_key=SecretStr(os.getenv('GEMINI_API_KEY')))
+	logger.info(task)
 
 	agent = Agent(
-		task= check_if_survey_in_url(browser),
+		task=task,
 		llm=llm,
 		browser=browser,
 		controller=controller,
