@@ -6,17 +6,12 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import SecretStr
 
-from browser_use import Agent, Browser, BrowserConfig, Controller
-from browser_use.agent.service import BrowserContext
+from browser_use import Agent, Browser, Controller
+from browser_use.browser.browser import BrowserConfig
+from browser_use.browser.context import BrowserContext
 
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-controller = Controller()
-
-# Define your two tasks
 SURVEY_TASK = (
 	'You are Jan Vermeulen, a 34-year-old man (1 Januari 1990).' 
 	'You are from Heemstede, Noord-Holland, Netherlands. '
@@ -32,40 +27,19 @@ NO_SURVEY_TASK = (
 )
 
 
-# sync def check_if_survey_in_url(browser: BrowserContext):
-# 	try:
-# 		page = await browser.get_current_page()
-# 		url = page.url
-# 		logger.info(f'Current page URL: {url}')
-# 		return SURVEY_TASK if 'survey' in url.lower() or "screening" in url.lower else NO_SURVEY_TASK
-# 	except Exception as e:
-# 		logger.error(f'Error checking page URL: {e}', exc_info=True)
-# 		return 'error'
-
-
 async def main():
 	browser = Browser(
 		config=BrowserConfig(
-			chrome_instance_path='C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',  # type: ignore
+			chrome_instance_path='C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
 		)
 	)
-	task = ''
-	context = await browser.new_context()
-	page = await context.get_current_page()
-	url = page.url
-	if 'survey' in url.lower() or "screening" in url.lower:
-		task = SURVEY_TASK
-	else:
-		task = NO_SURVEY_TASK
 
 	llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash-exp', api_key=SecretStr(os.getenv('GEMINI_API_KEY')))
-	logger.info(task)
 
 	agent = Agent(
-		task=task,
+		task=f"Analyse the current page's details you have been given, does it url contain 'survey' or 'screening'? or 'samplicio' or 'profiler'? If Yes your ultimate task is: {SURVEY_TASK}, else it is: {NO_SURVEY_TASK} ",
 		llm=llm,
 		browser=browser,
-		controller=controller,
 	)
 	await agent.run()
 
